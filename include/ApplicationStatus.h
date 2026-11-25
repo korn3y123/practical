@@ -3,7 +3,17 @@
 #define APPLICATIONSTATUS_H
 
 
-class ApplicationStatus {
+enum class ApplicationStatus {
+    SUBMITTED,
+    VERIFIED,
+    SCORED,
+    APPROVED,
+    REJECTED,
+    CONTRACT_PREPARED,
+    CONTRACT_SIGNED,
+    FUNDS_ISSUED,
+    COMPLETED,
+    CANCELLED
 };
 
 

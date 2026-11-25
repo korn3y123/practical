@@ -22,5 +22,9 @@ add_executable(practical src/main.cpp
         include/Bank.h
         src/Menu.cpp
         include/Menu.h
-        src/ApplicationStatus.cpp
-        include/ApplicationStatus.h)
+        include/ApplicationStatus.h
+        include/LoanType.h
+        include/LoanStatus.h
+        include/Payment.h
+        include/CarLoan.h
+        src/CarLoan.cpp)
