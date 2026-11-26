@@ -23,3 +23,36 @@ void Client::set_monthly_income(double monthly_income) {
 void Client::set_monthly_expenses(double monthly_expenses) {
     this->monthly_expenses = monthly_expenses;
 }
+
+int Client::get_id() const {
+    return id;
+}
+
+std::string Client::get_name() const {
+    return name;
+}
+
+int Client::get_age() const {
+    return age;
+}
+
+std::string Client::get_phone() const {
+    return phone;
+}
+
+double Client::get_monthly_income() const {
+    return monthly_income;
+}
+
+double Client::get_monthly_expenses() const {
+    return monthly_expenses;
+}
+
+double Client::get_available_income() const {
+    return monthly_income - monthly_expenses;
+}
+
+bool Client::validate() const {
+    return id > 0 and !name.empty() and age >= 18 and !phone.empty() and monthly_income >= 0
+           and monthly_expenses >= 0;
+}
