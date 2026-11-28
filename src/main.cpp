@@ -3,6 +3,7 @@
 #include "../include/PaymentSchedule.h"
 #include "../include/Client.h"
 #include "../include/LoanApplication.h"
+#include "../include/Loan.h"
 
 void test_client() {
     std::cout << "===== CLIENT TEST =====" << std::endl;
@@ -97,10 +98,99 @@ void test_payment_schedule() {
     std::cout << "Payment count after clear: " << schedule.get_payment_count() << std::endl;
 }
 
+class TestLoan : public Loan {
+public:
+    using Loan::Loan;
+
+    LoanType get_loan_type() const override {
+        return LoanType::CONSUMER;
+    }
+
+    double calculate_commission() const override {
+        return get_amount() * 0.02;
+    }
+};
+
+void test_loan() {
+    std::cout << "===== LOAN TEST =====" << std::endl;
+
+    TestLoan loan(1, 1, 1, 50000, 24, 12);
+
+    std::cout << std::boolalpha;
+    std::cout << std::fixed << std::setprecision(2);
+
+    // Test getters
+    std::cout << "ID: " << loan.get_id() << std::endl;
+    std::cout << "Application ID: " << loan.get_application_id() << std::endl;
+    std::cout << "Client ID: " << loan.get_client_id() << std::endl;
+    std::cout << "Amount: " << loan.get_amount() << std::endl;
+    std::cout << "Interest rate: " << loan.get_interest_rate() << std::endl;
+    std::cout << "Term: " << loan.get_term() << std::endl;
+    std::cout << "Remaining debt: " << loan.get_remaining_debt() << std::endl;
+
+    // Test validation
+    std::cout << "Validate: " << loan.validate() << std::endl;
+
+    // Test initial status
+    std::cout << "Pending: " << (loan.get_status() == LoanStatus::PENDING) << std::endl;
+
+    // Test calculations
+    std::cout << std::endl << "===== LOAN CALCULATIONS =====" << std::endl;
+    std::cout << "Monthly payment: " << loan.calculate_monthly_payment() << std::endl;
+    std::cout << "Commission: " << loan.calculate_commission() << std::endl;
+    std::cout << "Total payment: " << loan.calculate_total_payment() << std::endl;
+    std::cout << "Overpayment: " << loan.calculate_overpayment() << std::endl;
+
+    // Test loan issuing
+    std::cout << std::endl << "===== LOAN ISSUING =====" << std::endl;
+    std::cout << "Generate before issuing: " << loan.generate_payment_schedule() << std::endl;
+    std::cout << "Issue without date: " << loan.issue("") << std::endl;
+    std::cout << "Issue: " << loan.issue("28.11.2026") << std::endl;
+    std::cout << "Active: " << (loan.get_status() == LoanStatus::ACTIVE) << std::endl;
+    std::cout << "Issued at: " << loan.get_issued_at() << std::endl;
+    std::cout << "Issue again: " << loan.issue("28.11.2026") << std::endl;
+
+    // Test payment schedule
+    std::cout << std::endl << "===== PAYMENT SCHEDULE =====" << std::endl;
+
+    bool generated = loan.generate_payment_schedule();
+    std::cout << "Generate: " << generated << std::endl;
+    std::cout << "Generate again: " << loan.generate_payment_schedule() << std::endl;
+    const PaymentSchedule& schedule = loan.get_payment_schedule();
+    std::cout << "Payment count: " << schedule.get_payment_count() << std::endl;
+
+    for (const Payment& payment : schedule.get_payments()) {
+        std::cout << payment.number << " | "
+                  << payment.date << " | "
+                  << payment.amount << " | "
+                  << payment.principal << " | "
+                  << payment.interest << " | "
+                  << payment.remaining_debt << std::endl;
+    }
+
+    std::cout << "Total interest: " << schedule.get_total_interest() << std::endl;
+    std::cout << "Total payment with commission: " << loan.calculate_total_payment() << std::endl;
+    std::cout << "Overpayment: " << loan.calculate_overpayment() << std::endl;
+    std::cout << "Actual remaining debt: " << loan.get_remaining_debt() << std::endl;
+
+    // Test invalid loan
+    std::cout << std::endl << "===== INVALID LOAN TEST =====" << std::endl;
+    TestLoan invalid_loan(2, 2, 1, -50000, 24, 12);
+    std::cout << "Validate: " << invalid_loan.validate() << std::endl;
+    std::cout << "Issue: " << invalid_loan.issue("28.11.2026") << std::endl;
+
+    // Test zero interest rate
+    std::cout << std::endl << "===== ZERO INTEREST TEST =====" << std::endl;
+    TestLoan zero_interest_loan(3, 3, 1, 12000, 0, 12);
+    std::cout << "Validate: " << zero_interest_loan.validate() << std::endl;
+    std::cout << "Monthly payment: " << zero_interest_loan.calculate_monthly_payment() << std::endl;
+}
+
 int main() {
     // test_client();
     // test_loan_application();
-    test_payment_schedule();
+    // test_payment_schedule();
+    test_loan();
 
     return 0;
 }
